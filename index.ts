@@ -34,8 +34,8 @@ const apiUrl: string = 'https://dog.ceo/api/breeds/image/random';
 
 const button = document.querySelector('button');
 
+let subscription;
 const btn$ = fromEvent(button, 'click').subscribe((observer) => {
-  let subscription;
   if (button.innerHTML == 'Start') {
     button.innerHTML = 'Stop';
     subscription = setInterval(() => {
@@ -46,6 +46,7 @@ const btn$ = fromEvent(button, 'click').subscribe((observer) => {
     }, 5000);
   } else {
     button.innerHTML = 'Start';
+    console.log(subscription);
     clearInterval(subscription);
   }
 });
