@@ -4,7 +4,6 @@ import { fromEvent, Observable } from 'rxjs';
 //import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 function updateImages(linkList): void {
-  //document.getElementById('slideshow').classList.add('loading');
   document.getElementById('slideshow').childNodes.forEach((node: ChildNode) => {
     if (node.nodeType == Node.ELEMENT_NODE) {
       if (linkList.length) {
@@ -15,7 +14,6 @@ function updateImages(linkList): void {
       }
     }
   });
-  //document.getElementById('slideshow').classList.remove('loading');
 }
 /*
  * This API endpoint returns a JSON message of the following format:
