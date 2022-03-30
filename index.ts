@@ -10,7 +10,7 @@ function updateImages(linkList): void {
         let element: HTMLElement = node as HTMLElement;
         element.classList.add('loading');
         element.style.backgroundImage = "url('" + linkList.shift() + "')";
-        element.classList.remove('loading');
+        setTimeout(() => element.classList.remove('loading'), 600);
       }
     }
   });
