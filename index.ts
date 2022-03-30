@@ -1,7 +1,5 @@
 import './style.css';
-
 import { fromEvent, Observable } from 'rxjs';
-//import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 function updateImages(linkList): void {
   document.getElementById('slideshow').childNodes.forEach((node: ChildNode) => {
@@ -9,7 +7,11 @@ function updateImages(linkList): void {
       if (linkList.length) {
         let element: HTMLElement = node as HTMLElement;
         element.classList.add('loading');
-        element.style.backgroundImage = "url('" + linkList.shift() + "')";
+        setTimeout(
+          () =>
+            (element.style.backgroundImage = "url('" + linkList.shift() + "')"),
+          100
+        );
         setTimeout(() => element.classList.remove('loading'), 600);
       }
     }
