@@ -3,25 +3,19 @@ import './style.css';
 import { fromEvent, Observable } from 'rxjs';
 //import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
-function updateImages(
-  link0: string,
-  link1: string,
-  link2: string,
-  link3: string
-): void {
-  let links: string[] = [link0, link1, link2, link3];
-  document.getElementById('slideshow').classList.add('loading');
+function updateImages(linkList): void {
+  //document.getElementById('slideshow').classList.add('loading');
   document.getElementById('slideshow').childNodes.forEach((node: ChildNode) => {
     if (node.nodeType == Node.ELEMENT_NODE) {
-      if (links.length) {
+      if (linkList.length) {
         let element: HTMLElement = node as HTMLElement;
-        //element.classList.add('loading');
-        element.style.backgroundImage = "url('" + links.shift() + "')";
-        //element.classList.remove('loading');
+        element.classList.add('loading');
+        element.style.backgroundImage = "url('" + linkList.shift() + "')";
+        element.classList.remove('loading');
       }
     }
   });
-  document.getElementById('slideshow').classList.remove('loading');
+  //document.getElementById('slideshow').classList.remove('loading');
 }
 /*
  * This API endpoint returns a JSON message of the following format:
@@ -39,8 +33,7 @@ const btn$ = fromEvent(button, 'click').subscribe((observer) => {
   if (button.innerHTML == 'Start') {
     button.innerHTML = 'Stop';
     subscription = url$.subscribe((observer) => {
-      console.log('New Images');
-      updateImages(observer[0], observer[1], observer[2], observer[3]);
+      updateImages(observer);
     });
   } else {
     button.innerHTML = 'Start';
@@ -50,22 +43,16 @@ const btn$ = fromEvent(button, 'click').subscribe((observer) => {
 
 const url$ = new Observable(function subscribe(subscriber) {
   const callSequence = setInterval(() => {
-    subscriber.next(
-      Promise.all([
-        fetch(apiUrl)
-          .then((response) => response.json())
-          .then((response) => response.message),
-        fetch(apiUrl)
-          .then((response) => response.json())
-          .then((response) => response.message),
-        fetch(apiUrl)
-          .then((response) => response.json())
-          .then((response) => response.message),
-        fetch(apiUrl)
-          .then((response) => response.json())
-          .then((response) => response.message),
-      ])
-    );
+    let urlList = [];
+    for (let i = 0; i < 4; i++) {
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((response) => response.message)
+        .then((response) => {
+          urlList.push(response);
+          if (urlList.length == 4) subscriber.next(urlList);
+        });
+    }
   }, 5000);
   return function unsubscribe() {
     clearInterval(callSequence);
