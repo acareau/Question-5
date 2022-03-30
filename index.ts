@@ -1,7 +1,7 @@
 import './style.css';
 
 import { fromEvent, Observable } from 'rxjs';
-import { fromPromise } from 'rxjs/internal/observable/innerFrom';
+//import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 function updateImages(
   link0: string,
@@ -38,32 +38,36 @@ let subscription;
 const btn$ = fromEvent(button, 'click').subscribe((observer) => {
   if (button.innerHTML == 'Start') {
     button.innerHTML = 'Stop';
-    subscription = setInterval(() => {
-      url$.subscribe((observer) => {
-        console.log('New Images');
-        updateImages(observer[0], observer[1], observer[2], observer[3]);
-      });
-    }, 5000);
+    subscription = url$.subscribe((observer) => {
+      console.log('New Images');
+      updateImages(observer[0], observer[1], observer[2], observer[3]);
+    });
   } else {
     button.innerHTML = 'Start';
-    console.log(subscription);
-    clearInterval(subscription);
+    subscription.unsubscribe();
   }
 });
 
-const url$ = fromPromise(
-  Promise.all([
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((response) => response.message),
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((response) => response.message),
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((response) => response.message),
-    fetch(apiUrl)
-      .then((response) => response.json())
-      .then((response) => response.message),
-  ])
-);
+const url$ = new Observable(function subscribe(subscriber) {
+  const callSequence = setInterval(() => {
+    subscriber.next(
+      Promise.all([
+        fetch(apiUrl)
+          .then((response) => response.json())
+          .then((response) => response.message),
+        fetch(apiUrl)
+          .then((response) => response.json())
+          .then((response) => response.message),
+        fetch(apiUrl)
+          .then((response) => response.json())
+          .then((response) => response.message),
+        fetch(apiUrl)
+          .then((response) => response.json())
+          .then((response) => response.message),
+      ])
+    );
+  }, 5000);
+  return function unsubscribe() {
+    clearInterval(callSequence);
+  };
+});
